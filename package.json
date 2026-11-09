@@ -1,7 +1,7 @@
 {
   "name": "multi-emulator",
   "version": "0.1.0",
-  "description": "Multi Emulator ADR version for education",
+  "description": "Multi-Browser Profile & Android Emulator Synchronous Control Hub (Anti-Lag Edition)",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -12,12 +12,14 @@
     "url": "git+https://github.com/TrungLegit/Multi_Emulator.git"
   },
   "keywords": [
+    "browser-sync",
+    "multi-profile",
+    "chrome-cdp",
+    "anti-lag",
     "emulator",
+    "automation",
     "education",
-    "adr",
-    "python",
-    "nodejs",
-    "html"
+    "adr"
   ],
   "author": "TrungLegit",
   "license": "MIT",
