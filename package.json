@@ -1,0 +1,31 @@
+{
+  "name": "multi-emulator",
+  "version": "0.1.0",
+  "description": "Multi Emulator ADR version for education",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"No tests specified yet\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TrungLegit/Multi_Emulator.git"
+  },
+  "keywords": [
+    "emulator",
+    "education",
+    "adr",
+    "python",
+    "nodejs",
+    "html"
+  ],
+  "author": "TrungLegit",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TrungLegit/Multi_Emulator/issues"
+  },
+  "homepage": "https://github.com/TrungLegit/Multi_Emulator#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
