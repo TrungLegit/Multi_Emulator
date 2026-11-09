@@ -1,427 +1,458 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Multi_Emulator — Hệ thống điều khiển đa giả lập siêu nhẹ Phone Farm Box cho TikTok, Facebook, Instagram và Treo Game (Educational ADR Edition)." />
-  <title>Multi_Emulator — Phone Farm Box & Ultra-Lite Sync Control Center</title>
-  <link rel="stylesheet" href="/css/main.css" />
+  <title>Multi_Emulator — Browser Profiles & Multi-Instance Sync Hub</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --card: #1e293b;
+      --card-hover: #26354d;
+      --border: rgba(148, 163, 184, 0.18);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #a855f7;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 {
+      font-size: 1.7rem;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-top: 0.25rem;
+    }
+    .toolbar {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+    button {
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.5rem 0.95rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    button:hover {
+      background: var(--card-hover);
+      border-color: var(--accent);
+    }
+    button.primary {
+      background: var(--accent);
+      color: #0f172a;
+      border-color: var(--accent);
+    }
+    button.primary:hover {
+      opacity: 0.92;
+    }
+    button.purple {
+      background: var(--purple);
+      color: #ffffff;
+      border-color: var(--purple);
+    }
+    button.danger {
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+    }
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .stat-value {
+      font-size: 1.65rem;
+      font-weight: 700;
+      margin-top: 0.35rem;
+    }
+    .sync-bar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .sync-bar-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .sync-bar input {
+      flex: 1;
+      min-width: 260px;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    .sync-quick-btns {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .tag-badge {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+    .emu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .emu-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .emu-card.browser {
+      border-left: 4px solid var(--purple);
+    }
+    .emu-card.emulator {
+      border-left: 4px solid var(--accent);
+    }
+    .emu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .emu-title {
+      font-weight: 600;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .emu-meta {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+    .badge.SYNCED, .badge.CONNECTED {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+    .badge.DISCOVERED, .badge.DISCONNECTED {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+    .log-box {
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      max-height: 220px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+  </style>
 </head>
 <body>
-  <!-- 1. Top Navigation Bar -->
-  <header class="top-navbar">
-    <div class="brand-wrap">
-      <div class="pf-logo" aria-hidden="true">
-        <span class="pf-p">P</span><span class="pf-f">F</span>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Multi_Emulator & Browser Sync Hub</h1>
+        <p class="subtitle">Điều khiển đồng bộ cùng lúc nhiều Profile Chrome / Browser & Emulators (Anti-Lag Optimization)</p>
       </div>
-      <div class="brand-titles">
-        <h1>
-          Multi_Emulator Phone Farm Box
-          <span class="brand-badge">Ultra-Lite Edition</span>
-        </h1>
-        <p class="brand-subtitle">
-          Control TikTok, Facebook, Instagram &amp; Idle Games at Scale — One Box to Rule Them All
-        </p>
+      <div class="toolbar">
+        <button onclick="scanAll()">🔍 1. Scan Hub</button>
+        <button class="primary" onclick="connectAndLinkAll()">🔗 2. Connect & Link All</button>
+        <button class="purple" onclick="createMoreProfiles()">＋ Thêm 2 Profile</button>
+        <button class="danger" onclick="disconnectAll()">Disconnect All</button>
       </div>
-    </div>
+    </header>
 
-    <nav class="nav-tabs" aria-label="Main Navigation">
-      <button class="nav-tab active" data-tab="matrix" id="tab-btn-matrix">
-        📱 Phone Farm Matrix (7×3)
-      </button>
-      <button class="nav-tab" data-tab="table" id="tab-btn-table">
-        📊 Quản lý Chi tiết (Table View)
-      </button>
-      <button class="nav-tab" data-tab="adr" id="tab-btn-adr">
-        📚 Học tập Kiến trúc (ADR Portal)
-      </button>
-      <button class="nav-tab" data-tab="guide" id="tab-btn-guide">
-        📖 Hướng dẫn (User Guide)
-      </button>
-    </nav>
-
-    <div class="top-actions">
-      <div class="ws-indicator">
-        <span class="ws-dot"></span>
-        <span id="ws-status-text">Real-Time Sync Live</span>
+    <section class="summary-grid">
+      <div class="stat-card">
+        <div class="stat-label">Tổng Profiles & Devices</div>
+        <div class="stat-value" id="stat-discovered">0</div>
       </div>
-      <button class="ctrl-btn primary" id="btn-open-create-modal" style="padding:0.48rem 0.85rem;">
-        ＋ Tạo Máy Ảo Mới
-      </button>
-    </div>
-  </header>
-
-  <!-- 2. Overview Metric Cards (PLAN.md Section 3.A.2) -->
-  <section class="metrics-strip" aria-label="System Metrics">
-    <div class="metric-card">
-      <div class="metric-info">
-        <div class="metric-label">Tổng Máy Ảo (Discovered)</div>
-        <div class="metric-value" id="stat-discovered">21</div>
-        <div class="metric-sub">7×3 Phone Farm Rack</div>
+      <div class="stat-card">
+        <div class="stat-label">Đã kết nối (Connected)</div>
+        <div class="stat-value" id="stat-connected">0</div>
       </div>
-      <div class="metric-badge">📱</div>
-    </div>
-
-    <div class="metric-card">
-      <div class="metric-info">
-        <div class="metric-label">Đang Chạy (Running)</div>
-        <div class="metric-value" id="stat-connected">21</div>
-        <div class="metric-sub">ADB / TCP Active</div>
+      <div class="stat-card">
+        <div class="stat-label">Đang trong Sync Hub</div>
+        <div class="stat-value" id="stat-synced">0</div>
       </div>
-      <div class="metric-badge">🟢</div>
-    </div>
-
-    <div class="metric-card">
-      <div class="metric-info">
-        <div class="metric-label">Đồng Bộ Hóa (Synced Hub)</div>
-        <div class="metric-value" id="stat-synced">21</div>
-        <div class="metric-sub">Multi-Touch Broadcast</div>
+      <div class="stat-card">
+        <div class="stat-label">Chế độ Anti-Lag</div>
+        <div class="stat-value" style="color: var(--success); font-size: 1.3rem; margin-top: 0.6rem;">Kích hoạt (32MB cache, Mute)</div>
       </div>
-      <div class="metric-badge">🔗</div>
-    </div>
+    </section>
 
-    <div class="metric-card">
-      <div class="metric-info">
-        <div class="metric-label">Nhóm Đồng Bộ (Sync Groups)</div>
-        <div class="metric-value" id="stat-groups">1</div>
-        <div class="metric-sub">Master: #01 emu_01</div>
+    <!-- Synchronized Command Controller -->
+    <section class="sync-bar">
+      <div class="sync-bar-row">
+        <strong>🌐 Điều hướng URL đồng loạt:</strong>
+        <input id="sync-url" type="text" value="https://www.tiktok.com" placeholder="Nhập URL (ví dụ https://www.facebook.com hoặc https://www.tiktok.com)" />
+        <button class="primary" onclick="broadcastNav()">🚀 Mở trên tất cả Profile</button>
       </div>
-      <div class="metric-badge">👑</div>
-    </div>
 
-    <div class="metric-card">
-      <div class="metric-info">
-        <div class="metric-label">Tổng RAM Sử Dụng</div>
-        <div class="metric-value" id="stat-ram-total">8.2 GB</div>
-        <div class="metric-sub">~390 MB / máy (Siêu nhẹ)</div>
-      </div>
-      <div class="metric-badge">⚡</div>
-    </div>
-
-    <div class="metric-card">
-      <div class="metric-info">
-        <div class="metric-label">Trung Bình CPU</div>
-        <div class="metric-value" id="stat-cpu-avg">8.4%</div>
-        <div class="metric-sub">Khóa 30 FPS tiết kiệm điện</div>
-      </div>
-      <div class="metric-badge">🖥️</div>
-    </div>
-  </section>
-
-  <!-- 3. Main Workspace Panels -->
-  <main class="workspace-container">
-    <!-- TAB 1: PHONE FARM MATRIX (Matches Attached Image Layout) -->
-    <div class="tab-panel active" id="panel-matrix">
-      <div class="farm-monitor-frame">
-        <div class="farm-monitor-banner">
-          <span>UNMATCHED AUTOMATION CONTROL • INTEGRATED MOBILE ECOSYSTEM • TIKTOK / FB / IG OPTIMIZED</span>
-          <span>CHƯƠNG — FRONTEND DASHBOARD LEAD</span>
-        </div>
-
-        <div class="farm-monitor-body">
-          <!-- Left Control Sidebar (Styled after Plufine Control Sidebar in image.png) -->
-          <aside class="control-sidebar" aria-label="Phone Farm Control Panel">
-            <div class="sidebar-brand-header">
-              <div class="sidebar-brand-logo"><span>P</span>F</div>
-              <div class="sidebar-brand-text">
-                <h2>Multi_Emulator</h2>
-                <p>Phone Farm Control Center v2.0</p>
-              </div>
-            </div>
-
-            <!-- Section A: Batch Lifecycle & Discovery -->
-            <div class="sidebar-section">
-              <div class="sidebar-section-title">
-                <span>1. Điều Phối Dàn Máy</span>
-                <span style="color:#2563eb;">Batch Control</span>
-              </div>
-              <div class="ctrl-btn-grid cols-2">
-                <button class="ctrl-btn" onclick="window.app.scanEmulators()">🔍 1. Scan Máy</button>
-                <button class="ctrl-btn primary" onclick="window.app.connectAllEmulators()">🔗 2. Sync Tất Cả</button>
-                <button class="ctrl-btn success" onclick="window.app.load21PhonePreset()">📦 Nạp Box 21 Máy</button>
-                <button class="ctrl-btn danger" onclick="window.app.disconnectAllEmulators()">⏹ Dừng Tất Cả</button>
-              </div>
-            </div>
-
-            <!-- Section B: Quick App Switcher (TikTok, FB, IG, YouTube, Game) -->
-            <div class="sidebar-section">
-              <div class="sidebar-section-title">
-                <span>2. Chuyển App Đồng Loạt</span>
-                <span>1-Click Launch</span>
-              </div>
-              <div class="ctrl-btn-grid">
-                <button class="ctrl-btn active-app" data-app-btn="tiktok" onclick="window.app.switchAppOnAll('tiktok')">
-                  ♪ TikTok
-                </button>
-                <button class="ctrl-btn" data-app-btn="facebook" onclick="window.app.switchAppOnAll('facebook')">
-                  f Facebook
-                </button>
-                <button class="ctrl-btn" data-app-btn="instagram" onclick="window.app.switchAppOnAll('instagram')">
-                  ◎ Instagram
-                </button>
-                <button class="ctrl-btn" data-app-btn="youtube" onclick="window.app.switchAppOnAll('youtube')">
-                  ▶ YouTube
-                </button>
-                <button class="ctrl-btn" data-app-btn="idle_game" onclick="window.app.switchAppOnAll('idle_game')">
-                  ⚔ Treo Game
-                </button>
-                <button class="ctrl-btn" onclick="window.app.optimizeAllEmulators()">
-                  ⚡ Tối Ưu RAM
-                </button>
-              </div>
-            </div>
-
-            <!-- Section C: Sliders (Matching the 4 sliders in image.png) -->
-            <div class="sidebar-section">
-              <div class="sidebar-section-title">
-                <span>3. Tham Số Tự Động Hóa</span>
-                <span>Sliders</span>
-              </div>
-
-              <div class="slider-row">
-                <div class="slider-header">
-                  <span>Tốc độ vuốt (Swipe Speed)</span>
-                  <span id="val-speed">250 ms</span>
-                </div>
-                <input type="range" id="slider-speed" min="100" max="800" step="50" value="250" />
-              </div>
-
-              <div class="slider-row">
-                <div class="slider-header">
-                  <span>Chu kỳ tự lướt (Auto Scroll)</span>
-                  <span id="val-delay">4 s</span>
-                </div>
-                <input type="range" id="slider-delay" min="2" max="15" step="1" value="4" />
-              </div>
-
-              <div class="slider-row">
-                <div class="slider-header">
-                  <span>Giới hạn khung hình (FPS Cap)</span>
-                  <span id="val-fps">30 FPS</span>
-                </div>
-                <input type="range" id="slider-fps" min="15" max="60" step="5" value="30" />
-              </div>
-
-              <div class="slider-row">
-                <div class="slider-header">
-                  <span>Kích thước màn hình (Grid Scale)</span>
-                  <span id="val-scale">128px</span>
-                </div>
-                <input type="range" id="slider-scale" min="105" max="190" step="5" value="128" />
-              </div>
-            </div>
-
-            <!-- Section D: Multi-Touch Navigation & Auto Scroll -->
-            <div class="sidebar-section">
-              <div class="sidebar-section-title">
-                <span>4. Thao Tác Điều Hướng Chung</span>
-                <span>ADB Input</span>
-              </div>
-              <div class="ctrl-btn-grid cols-4" style="margin-bottom:0.4rem;">
-                <button class="ctrl-btn" onclick="window.app.sendQuickSwipe('up')">⬆ Lướt Lên</button>
-                <button class="ctrl-btn" onclick="window.app.sendQuickSwipe('down')">⬇ Lướt Xuống</button>
-                <button class="ctrl-btn" onclick="window.app.sendQuickKey('KEYCODE_HOME')">🏠 Home</button>
-                <button class="ctrl-btn" onclick="window.app.sendQuickKey('KEYCODE_BACK')">◀ Back</button>
-              </div>
-              <button class="ctrl-btn primary" id="btn-auto-scroll" style="width:100%;margin-bottom:0.4rem;" onclick="window.app.toggleAutoReelScroll()">
-                🔄 Auto Lướt Video: OFF
-              </button>
-              <div class="sidebar-cmd-box">
-                <input id="sync-cmd" type="text" value="input tap 180 320" placeholder="Lệnh ADB (vd: input tap 180 320)" />
-                <button class="ctrl-btn primary" onclick="window.app.broadcastCommand()">Gửi</button>
-              </div>
-            </div>
-
-            <!-- Section E: Synced Device Checklist -->
-            <div class="sidebar-section">
-              <div class="sidebar-section-title">
-                <span>5. Danh Sách Máy Trong Box</span>
-                <span>21 Slots</span>
-              </div>
-              <div class="sidebar-device-list" id="sidebar-device-list"></div>
-            </div>
-
-            <!-- Bottom Hardware Rack Box Indicator (Matches the Server Box in image.png) -->
-            <div class="hardware-box-card">
-              <div class="fan-column" aria-hidden="true">
-                <div class="fan-ring"></div>
-                <div class="fan-ring"></div>
-              </div>
-              <div class="hardware-box-meta">
-                <strong>PHONE FARM BOX RACK #01</strong>
-                20-Bay ARM/x86 Blade • Nhiệt độ: 41°C<br />
-                Chế độ: Ultra-Lite (Tắt GPU nặng)
-              </div>
-            </div>
-          </aside>
-
-          <!-- Right Phone Screen Matrix Area (7x3 White Phone Bezels) -->
-          <div class="phone-matrix-workspace">
-            <div class="matrix-top-bar">
-              <div>
-                <strong>🟢 Trạng thái Đồng Bộ Đa Màn Hình (Multi-Control Sync: BẬT)</strong>
-                <span style="color:#475569;margin-left:0.5rem;">
-                  Click trực tiếp vào bất kỳ màn hình điện thoại nào bên dưới để chạm (Tap) đồng loạt trên cả 21 máy.
-                </span>
-              </div>
-              <div class="matrix-filter-group">
-                <span style="font-weight:700;color:#1e3a8a;">Cấu hình: Lite 360×640 (160 DPI)</span>
-              </div>
-            </div>
-
-            <!-- 21 Phone Screens Grid -->
-            <div class="phone-matrix-grid" id="emu-grid"></div>
-          </div>
+      <div class="sync-bar-row">
+        <span class="tag-badge">Truy cập nhanh:</span>
+        <div class="sync-quick-btns">
+          <button onclick="quickNav('https://www.tiktok.com')">TikTok</button>
+          <button onclick="quickNav('https://www.facebook.com')">Facebook</button>
+          <button onclick="quickNav('https://www.youtube.com')">YouTube</button>
+          <button onclick="quickNav('https://www.google.com')">Google</button>
         </div>
       </div>
 
-      <!-- Bottom Real-time Console Log & Architecture Contract Status -->
-      <section class="bottom-dock" style="margin-top:0.85rem;">
-        <div class="console-panel">
-          <div class="panel-header">
-            <span>🖥 Live IPC &amp; WebSocket Console Log Viewer</span>
-            <select id="log-instance-filter" style="background:#090e1a;color:#f8fafc;border:1px solid #334155;border-radius:4px;font-size:0.72rem;padding:2px 6px;">
-              <option value="ALL">Tất cả máy ảo (All Instances)</option>
-            </select>
-          </div>
-          <div class="console-log-output" id="log-box">Ready. Hệ thống Phone Farm Box đã sẵn sàng điều khiển đồng loạt.</div>
-        </div>
-
-        <div class="console-panel">
-          <div class="panel-header">
-            <span>⚡ Tối Ưu Hóa Siêu Nhẹ (Ultra-Lite Engine)</span>
-          </div>
-          <div style="font-size:0.77rem;color:#cbd5e1;line-height:1.55;">
-            <p>• <strong>RAM mỗi máy:</strong> Chỉ ~380MB – 768MB (nhẹ hơn 70% so với LDPlayer mặc định).</p>
-            <p>• <strong>ADB Optimizer:</strong> Tự động tắt <code>window_animation_scale</code>, khóa 30 FPS và dọn các tiến trình nền Android.</p>
-            <p>• <strong>IPC Bridge:</strong> Node.js điều phối lệnh song song xuống Python <code>ThreadPoolExecutor</code>.</p>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <!-- TAB 2: TABLE VIEW -->
-    <div class="tab-panel" id="panel-table">
-      <div class="data-table-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-          <h2 style="font-size:1.1rem;color:#38bdf8;">Danh Sách Chi Tiết Các Máy Ảo (Instance Pool)</h2>
-          <div style="display:flex;gap:0.5rem;">
-            <button class="ctrl-btn primary" onclick="window.app.connectAllEmulators()">Khởi Động Tất Cả</button>
-            <button class="ctrl-btn danger" onclick="window.app.disconnectAllEmulators()">Dừng Tất Cả</button>
-          </div>
-        </div>
-        <table class="instances-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Tên Máy</th>
-              <th>Địa Chỉ ADB/TCP</th>
-              <th>Độ Phân Giải</th>
-              <th>Trạng Thái</th>
-              <th>Kết Nối Sync</th>
-              <th>CPU / RAM</th>
-              <th>Thao Tác Nhanh</th>
-            </tr>
-          </thead>
-          <tbody id="instances-table-body"></tbody>
-        </table>
+      <div class="sync-bar-row" style="border-top: 1px solid var(--border); padding-top: 0.75rem;">
+        <strong>⚡ Thao tác đồng bộ:</strong>
+        <button onclick="broadcastCmd('scroll-down')">⬇️ Cuộn xuống (Scroll Down)</button>
+        <button onclick="broadcastCmd('scroll-up')">⬆️ Cuộn lên (Scroll Up)</button>
+        <button onclick="broadcastCmd('reload')">🔄 Reload All</button>
+        <input id="sync-custom-cmd" type="text" placeholder="Lệnh tùy chỉnh (click <sel>, type <txt>, eval <js>)" style="max-width: 320px;" />
+        <button onclick="broadcastCustom()">Gửi lệnh</button>
       </div>
-    </div>
+    </section>
 
-    <!-- TAB 3: INTERACTIVE ADR LEARNING PORTAL (PLAN.md Section 3.A.2) -->
-    <div class="tab-panel" id="panel-adr">
-      <div class="adr-portal-layout">
-        <aside class="adr-list-sidebar">
-          <h2 style="font-size:0.95rem;color:#38bdf8;margin-bottom:0.35rem;">
-            Hồ Sơ Quyết Định Kiến Trúc (ADRs)
-          </h2>
-          <p style="font-size:0.75rem;color:#94a3b8;margin-bottom:0.5rem;">
-            Chọn từng tài liệu ADR bên dưới để xem lý do lựa chọn kiến trúc 3 tầng Python - Node.js - Web UI:
-          </p>
-          <div id="adr-list-container" style="display:flex;flex-direction:column;gap:0.5rem;"></div>
-        </aside>
-        <article class="adr-reader-card" id="adr-reader-container">
-          Đang tải nội dung ADR...
-        </article>
-      </div>
-    </div>
+    <!-- Active Profiles and Instances Grid -->
+    <section class="emu-grid" id="emu-grid"></section>
 
-    <!-- TAB 4: USER GUIDE (PLAN.md Section 3.B Deliverable) -->
-    <div class="tab-panel" id="panel-guide">
-      <div class="adr-reader-card">
-        <h1>Hướng Dẫn Sử Dụng Giao Diện Multi_Emulator Phone Farm Box</h1>
-        <p>Chào mừng bạn đến với bảng điều khiển <strong>Multi_Emulator (Ultra-Lite Edition)</strong> do <strong>Chương</strong> phát triển cho phần Frontend Dashboard.</p>
-
-        <h2>1. Cách sử dụng Lưới 21 Màn Hình (Phone Farm Matrix 7×3)</h2>
-        <ul>
-          <li><strong>Chạm đồng bộ (Synchronized Tap):</strong> Nhấn chuột trực tiếp vào bất kỳ vị trí nào trên một màn hình điện thoại đang chạy, hệ thống sẽ hiển thị vòng sóng chạm (ripple) và gửi tọa độ <code>input tap X Y</code> đồng loạt tới toàn bộ 21 máy trong nhóm Sync.</li>
-          <li><strong>Chuyển ứng dụng nhanh (1-Click App Switcher):</strong> Ở cột điều khiển bên trái, bấm vào <strong>TikTok</strong>, <strong>Facebook</strong>, <strong>Instagram</strong>, <strong>YouTube</strong> hoặc <strong>Treo Game</strong> để mở ứng dụng tương ứng trên tất cả máy cùng lúc.</li>
-          <li><strong>Tự động lướt video (Auto Scroll Reels/TikTok):</strong> Điều chỉnh thanh trượt <em>Chu kỳ tự lướt</em> (mặc định 4 giây) rồi bấm nút <strong>Auto Lướt Video</strong> để dàn máy tự động vuốt xem video mới.</li>
-        </ul>
-
-        <h2>2. Cách tối ưu hóa siêu nhẹ để treo nhiều máy không giật lag</h2>
-        <ul>
-          <li>Bấm nút <strong>⚡ Tối Ưu RAM</strong> trên thanh bên trái (hoặc biểu tượng ⚡ ở cạnh dưới từng điện thoại) để kích hoạt <code>AdbOptimizer</code>: hạ độ phân giải về <code>360x640</code> (160 DPI), tắt hiệu ứng chuyển cảnh Android và giải phóng bộ nhớ đệm.</li>
-        </ul>
-      </div>
-    </div>
-  </main>
-
-  <!-- 4. Modal Popup Cấu Hình & Tạo Máy Ảo Mới (PLAN.md Section 3.A.4) -->
-  <div class="modal-backdrop" id="create-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <div class="modal-dialog">
-      <h2 id="modal-title" style="font-size:1.1rem;color:#38bdf8;margin-bottom:1rem;">
-        ＋ Tạo &amp; Cấu Hình Máy Ảo Siêu Nhẹ Mới
-      </h2>
-      <form id="create-instance-form">
-        <div class="form-group">
-          <label for="new-inst-name">Tên máy ảo (Instance Name)</label>
-          <input type="text" id="new-inst-name" value="Phone-22 (Clone)" required />
-        </div>
-        <div class="form-group">
-          <label for="new-inst-profile">Chế độ phần cứng (Hardware Profile)</label>
-          <select id="new-inst-profile">
-            <option value="lite">Ultra-Lite (Khuyên dùng cho FB/IG/TikTok — 1 Core, 30 FPS)</option>
-            <option value="standard">Standard (Treo Game 2D/3D nhẹ — 2 Cores, 60 FPS)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="new-inst-res">Độ phân giải (Resolution)</label>
-          <select id="new-inst-res">
-            <option value="360x640">360 × 640 (Siêu nhẹ cho lưới 21 máy)</option>
-            <option value="540x960">540 × 960 (qHD Chuẩn)</option>
-            <option value="720x1280">720 × 1280 (HD)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="new-inst-dpi">Mật độ điểm ảnh (DPI)</label>
-          <input type="number" id="new-inst-dpi" value="160" min="120" max="480" />
-        </div>
-        <div class="form-group">
-          <label for="new-inst-ram">Giới hạn RAM (MB)</label>
-          <input type="number" id="new-inst-ram" value="768" min="512" max="4096" step="128" />
-        </div>
-        <div class="form-group">
-          <label for="new-inst-app">Ứng dụng khởi động mặc định</label>
-          <select id="new-inst-app">
-            <option value="tiktok">TikTok</option>
-            <option value="facebook">Facebook Lite</option>
-            <option value="instagram">Instagram</option>
-            <option value="youtube">YouTube</option>
-            <option value="idle_game">Treo Game AFK</option>
-          </select>
-        </div>
-        <div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-top:1rem;">
-          <button type="button" class="ctrl-btn" id="btn-close-create-modal">Hủy</button>
-          <button type="submit" class="ctrl-btn primary">Tạo &amp; Khởi Chạy</button>
-        </div>
-      </form>
-    </div>
+    <!-- Activity Log -->
+    <section>
+      <div class="stat-label" style="margin-bottom: 0.5rem;">Connector Activity Log</div>
+      <div class="log-box" id="log-box">Ready. Click "🔍 1. Scan Hub" to discover or initialize browser profiles.</div>
+    </section>
   </div>
 
-  <!-- 5. Toast Notifications Container -->
-  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+  <script>
+    function appendLog(msg) {
+      const box = document.getElementById("log-box");
+      const ts = new Date().toLocaleTimeString();
+      box.textContent = `[${ts}] ${msg}\n` + box.textContent;
+    }
 
-  <script type="module" src="/js/app.js"></script>
+    function renderState(data) {
+      const summary = data.summary || {};
+      document.getElementById("stat-discovered").textContent = summary.discoveredCount ?? 0;
+      document.getElementById("stat-connected").textContent = summary.connectedCount ?? 0;
+      document.getElementById("stat-synced").textContent = summary.syncedCount ?? 0;
+
+      const grid = document.getElementById("emu-grid");
+      const instances = data.instances || [];
+      if (!instances.length) {
+        grid.innerHTML = `<div class="emu-card"><p class="emu-meta">Chưa có profile nào. Bấm "Scan Hub" để quét hoặc "Thêm 2 Profile".</p></div>`;
+        return;
+      }
+
+      grid.innerHTML = instances.map((inst) => {
+        const isBrowser = inst.type === "browser_profile" || inst.source === "browser_cdp";
+        const icon = isBrowser ? "🌐" : "📱";
+        const cardClass = isBrowser ? "browser" : "emulator";
+        return `
+          <div class="emu-card ${cardClass}">
+            <div class="emu-header">
+              <div>
+                <div class="emu-title">${icon} ${inst.name} ${inst.isMaster ? "👑" : ""}</div>
+                <div class="emu-meta">ID: <strong>${inst.id}</strong> • Port: <strong>${inst.port}</strong> (${inst.source})</div>
+              </div>
+              <span class="badge ${inst.connectionState}">${inst.connectionState}</span>
+            </div>
+            <div class="emu-meta">
+              Sync Group: <strong>${inst.syncGroupId || "Not Linked"}</strong><br/>
+              Loại: <strong>${isBrowser ? "Chrome/Browser Profile (Anti-Lag)" : "Android Emulator"}</strong><br/>
+              Trạng thái: ${inst.lastMessage || "-"}
+            </div>
+            <div class="toolbar" style="margin-top: 0.25rem;">
+              <button onclick="connectOne('${inst.id}')">Kết nối</button>
+              <button onclick="disconnectOne('${inst.id}')">Ngắt</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function scanAll() {
+      appendLog("Đang quét Browser Profiles và thiết bị...");
+      const res = await fetch("/api/connector/scan", { method: "POST" });
+      const data = await res.json();
+      renderState(data);
+      appendLog(`Quét hoàn tất: tìm thấy ${data.summary?.discoveredCount || 0} profile/thiết bị.`);
+    }
+
+    async function connectAndLinkAll() {
+      appendLog("Đang kết nối toàn bộ profile và đưa vào nhóm điều khiển đồng bộ...");
+      const res = await fetch("/api/connector/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ autoLink: true }),
+      });
+      const data = await res.json();
+      renderState(data);
+      appendLog(`Đã liên kết ${data.summary?.syncedCount || 0} profile vào Sync Hub.`);
+    }
+
+    async function createMoreProfiles() {
+      appendLog("Đang tạo thêm 2 profile trình duyệt mới (anti-lag)...");
+      const res = await fetch("/api/browser/profiles/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ count: 2 }),
+      });
+      const data = await res.json();
+      appendLog(`Đã tạo thành công ${data.createdCount} profile mới.`);
+      await scanAll();
+    }
+
+    async function connectOne(instanceId) {
+      appendLog(`Đang kết nối ${instanceId}...`);
+      const res = await fetch("/api/connector/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ instanceId }),
+      });
+      const data = await res.json();
+      renderState(data);
+      appendLog(`Đã kết nối ${instanceId}.`);
+    }
+
+    async function disconnectOne(instanceId) {
+      appendLog(`Ngắt kết nối ${instanceId}...`);
+      const res = await fetch("/api/connector/disconnect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ instanceId }),
+      });
+      const data = await res.json();
+      renderState(data);
+      appendLog(`Đã ngắt ${instanceId}.`);
+    }
+
+    async function disconnectAll() {
+      appendLog("Đang ngắt kết nối toàn bộ...");
+      const res = await fetch("/api/connector/disconnect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      renderState(data);
+      appendLog("Đã ngắt toàn bộ.");
+    }
+
+    async function broadcastCmd(command) {
+      appendLog(`Đang gửi lệnh đồng bộ: "${command}"...`);
+      const res = await fetch("/api/connector/broadcast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        appendLog(`Lỗi: ${data.error}`);
+        return;
+      }
+      renderState(data);
+      appendLog(`Đã thực thi trên ${data.broadcast?.targetCount || 0} profile/thiết bị.`);
+    }
+
+    async function broadcastNav() {
+      const url = document.getElementById("sync-url").value.trim();
+      if (!url) return;
+      await broadcastCmd(`goto ${url}`);
+    }
+
+    async function quickNav(url) {
+      document.getElementById("sync-url").value = url;
+      await broadcastCmd(`goto ${url}`);
+    }
+
+    async function broadcastCustom() {
+      const cmd = document.getElementById("sync-custom-cmd").value.trim();
+      if (!cmd) return;
+      await broadcastCmd(cmd);
+      document.getElementById("sync-custom-cmd").value = "";
+    }
+
+    // Tự động load trạng thái ban đầu khi mở trang
+    fetch("/api/connector/status").then((r) => r.json()).then(renderState).catch(() => {});
+  </script>
 </body>
 </html>

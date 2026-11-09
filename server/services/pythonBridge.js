@@ -22,7 +22,7 @@ function runPythonConnector(args = []) {
     execFile(
       PYTHON_BIN,
       fullArgs,
-      { cwd: ROOT_DIR, timeout: 15000 },
+      { cwd: ROOT_DIR, timeout: 20000 },
       (error, stdout, stderr) => {
         if (error) {
           return reject(
@@ -69,4 +69,29 @@ module.exports = {
   disconnectOne: (instanceId) =>
     runPythonConnector(["disconnect", "--id", String(instanceId)]),
   disconnectAll: () => runPythonConnector(["disconnect"]),
+
+  // Browser Profile & Anti-Lag Multi-Control
+  createBrowserProfiles: (count = 1, prefix = "profile", browserType = "auto") =>
+    runPythonConnector([
+      "profile-create",
+      "--count",
+      String(count),
+      "--prefix",
+      prefix,
+      "--type",
+      browserType,
+    ]),
+  startBrowserProfile: (id = null, url = "about:blank") =>
+    runPythonConnector(
+      id
+        ? ["profile-start", "--id", String(id), "--url", url]
+        : ["profile-start", "--all", "--url", url]
+    ),
+  stopBrowserProfile: (id = null) =>
+    runPythonConnector(
+      id ? ["profile-stop", "--id", String(id)] : ["profile-stop", "--all"]
+    ),
+  listBrowserProfiles: () => runPythonConnector(["profile-list"]),
+  syncBrowserAction: (cmd, group = "sync_hub_default") =>
+    runPythonConnector(["profile-sync", "--cmd", String(cmd), "--group", group]),
 };

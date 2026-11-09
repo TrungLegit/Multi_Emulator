@@ -421,8 +421,56 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, result);
     }
 
+    // 10. Browser Profiles: List
+    if (req.method === "GET" && pathname === "/api/browser/profiles") {
+      const result = await pythonBridge.listBrowserProfiles();
+      return sendJson(res, 200, result);
+    }
+
+    // 11. Browser Profiles: Create
+    if (req.method === "POST" && pathname === "/api/browser/profiles/create") {
+      const body = await readJsonBody(req);
+      const result = await pythonBridge.createBrowserProfiles(
+        body.count || 1,
+        body.prefix || "profile",
+        body.browserType || "auto"
+      );
+      return sendJson(res, 200, result);
+    }
+
+    // 12. Browser Profiles: Start
+    if (req.method === "POST" && pathname === "/api/browser/profiles/start") {
+      const body = await readJsonBody(req);
+      const result = await pythonBridge.startBrowserProfile(
+        body.profileId || null,
+        body.url || "about:blank"
+      );
+      return sendJson(res, 200, result);
+    }
+
+    // 13. Browser Profiles: Stop
+    if (req.method === "POST" && pathname === "/api/browser/profiles/stop") {
+      const body = await readJsonBody(req);
+      const result = await pythonBridge.stopBrowserProfile(body.profileId || null);
+      return sendJson(res, 200, result);
+    }
+
+    // 14. Browser Profiles: Synchronized Action (Navigate, Scroll, Click, Type, Eval)
+    if (req.method === "POST" && pathname === "/api/browser/sync") {
+      const body = await readJsonBody(req);
+      if (!body.command) {
+        return sendJson(res, 400, { error: "Missing 'command' in request body" });
+      }
+      const result = await pythonBridge.syncBrowserAction(
+        body.command,
+        body.groupId || "sync_hub_default"
+      );
+      return sendJson(res, 200, result);
+    }
+
     res.writeHead(404, { "Content-Type": "text/plain" });
     res.end("Not Found");
+
   } catch (err) {
     sendJson(res, 500, { error: err.message || "Internal Server Error" });
   }

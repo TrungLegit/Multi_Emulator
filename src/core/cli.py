@@ -13,29 +13,32 @@ from src.core.instance_manager import InstanceManager
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        prog="multi-emulator",
-        description="Multi_Emulator Connector & Sync Hub CLI (Educational ADR version)",
-    )
-    parser.add_argument(
+    common_parent = argparse.ArgumentParser(add_help=False)
+    common_parent.add_argument(
         "--json",
         action="store_true",
         help="Output machine-readable JSON (used by Node.js IPC bridge)",
     )
-    parser.add_argument(
+    common_parent.add_argument(
         "--mock",
         action="store_true",
         help="Force simulated Mock emulators during discovery",
     )
 
+    parser = argparse.ArgumentParser(
+        prog="multi-emulator",
+        description="Multi_Emulator Connector & Sync Hub CLI (Educational ADR version)",
+        parents=[common_parent],
+    )
+
     subparsers = parser.add_subparsers(dest="command", help="Connector subcommands")
 
     # scan
-    subparsers.add_parser("scan", help="Scan and discover all available emulators")
+    subparsers.add_parser("scan", help="Scan and discover all available emulators", parents=[common_parent])
 
     # connect
     connect_parser = subparsers.add_parser(
-        "connect", help="Connect to one or all discovered emulators and link them"
+        "connect", help="Connect to one or all discovered emulators and link them", parents=[common_parent]
     )
     connect_parser.add_argument(
         "--id", dest="instance_id", help="Connect a specific emulator ID (e.g. emu_01)"
@@ -54,7 +57,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # link
     link_parser = subparsers.add_parser(
-        "link", help="Link connected emulators together into a Sync Group"
+        "link", help="Link connected emulators together into a Sync Group", parents=[common_parent]
     )
     link_parser.add_argument(
         "--ids",
@@ -74,7 +77,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # broadcast
     bcast_parser = subparsers.add_parser(
-        "broadcast", help="Broadcast a synchronized command to all linked emulators"
+        "broadcast", help="Broadcast a synchronized command to all linked emulators", parents=[common_parent]
     )
     bcast_parser.add_argument(
         "--cmd",
@@ -89,7 +92,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # disconnect
     disc_parser = subparsers.add_parser(
-        "disconnect", help="Disconnect one or all connected emulators"
+        "disconnect", help="Disconnect one or all connected emulators", parents=[common_parent]
     )
     disc_parser.add_argument(
         "--id", dest="instance_id", help="Specific emulator ID to disconnect"
@@ -97,17 +100,64 @@ def build_parser() -> argparse.ArgumentParser:
 
     # status
     subparsers.add_parser(
-        "status", help="Show current Connector Pool, Sync Hub, and Instance statuses"
+        "status", help="Show current Connector Pool, Sync Hub, and Instance statuses", parents=[common_parent]
     )
+
+    # profile-create
+    p_create = subparsers.add_parser(
+        "profile-create", help="Create one or multiple isolated anti-lag browser profiles", parents=[common_parent]
+    )
+    p_create.add_argument("--count", type=int, default=1, help="Number of profiles to create")
+    p_create.add_argument("--prefix", default="profile", help="Prefix for profile IDs")
+    p_create.add_argument("--type", default="auto", choices=["auto", "chrome", "edge", "brave"], help="Browser type")
+
+    # profile-start
+    p_start = subparsers.add_parser(
+        "profile-start", help="Launch browser profile(s) with anti-lag optimization flags", parents=[common_parent]
+    )
+    p_start.add_argument("--id", dest="profile_id", help="Specific profile ID to start")
+    p_start.add_argument("--all", action="store_true", help="Start all registered browser profiles")
+    p_start.add_argument("--url", default="about:blank", help="Initial URL to open")
+
+    # profile-stop
+    p_stop = subparsers.add_parser(
+        "profile-stop", help="Stop running browser profile(s)", parents=[common_parent]
+    )
+    p_stop.add_argument("--id", dest="profile_id", help="Specific profile ID to stop")
+    p_stop.add_argument("--all", action="store_true", help="Stop all running browser profiles")
+
+    # profile-list
+    subparsers.add_parser(
+        "profile-list", help="List all browser profiles with CDP port and live status", parents=[common_parent]
+    )
+
+    # profile-sync
+    p_sync = subparsers.add_parser(
+        "profile-sync", help="Synchronize actions across all connected browser profiles", parents=[common_parent]
+    )
+    p_sync.add_argument("--cmd", required=True, help="Action: 'goto <url>', 'scroll-down', 'click <sel>', 'type <txt>', 'eval <js>'")
+    p_sync.add_argument("--group", default=EmulatorConnector.DEFAULT_GROUP_ID, help="Target Sync Group")
 
     return parser
 
 
 def run_cli(argv: list[str] | None = None) -> int:
+    raw_argv = argv if argv is not None else sys.argv[1:]
+    is_json = "--json" in raw_argv
+    is_mock = "--mock" in raw_argv
+
     parser = build_parser()
     args = parser.parse_args(argv)
 
-    adapter = CompositeDiscoveryAdapter(force_mock=bool(args.mock))
+    if getattr(args, "json", False):
+        is_json = True
+    if getattr(args, "mock", False):
+        is_mock = True
+
+    from src.core.browser_profile import BrowserProfileManager
+
+    profile_mgr = BrowserProfileManager()
+    adapter = CompositeDiscoveryAdapter(force_mock=is_mock)
     connector = EmulatorConnector(adapter=adapter)
     manager = InstanceManager(connector=connector)
 
@@ -181,8 +231,45 @@ def run_cli(argv: list[str] | None = None) -> int:
             **connector.get_status(),
             "instances": manager.list_instances(auto_scan=True),
         }
+    elif args.command == "profile-create":
+        created = profile_mgr.create_profiles(
+            count=args.count, prefix=args.prefix, browser_type=args.type
+        )
+        result = {
+            "action": "profile_create",
+            "createdCount": len(created),
+            "profiles": [p.to_dict() for p in created],
+        }
+    elif args.command == "profile-start":
+        if args.profile_id:
+            res = profile_mgr.launch_profile(args.profile_id, initial_url=args.url)
+            result = {"action": "profile_start_one", "result": res}
+        else:
+            all_res = profile_mgr.launch_all(initial_url=args.url)
+            result = {"action": "profile_start_all", "results": all_res}
+    elif args.command == "profile-stop":
+        if args.profile_id:
+            stopped = profile_mgr.stop_profile(args.profile_id)
+            result = {"action": "profile_stop_one", "profileId": args.profile_id, "stopped": stopped}
+        else:
+            stopped_ids = profile_mgr.stop_all()
+            result = {"action": "profile_stop_all", "stoppedIds": stopped_ids}
+    elif args.command == "profile-list":
+        profiles = profile_mgr.list_profiles()
+        result = {"action": "profile_list", "count": len(profiles), "profiles": profiles}
+    elif args.command == "profile-sync":
+        # Connect & link all discovered profiles, then broadcast command
+        connector.scan_emulators()
+        connector.connect_all(auto_link=True, group_id=args.group)
+        bcast = connector.broadcast_command(command=args.cmd, group_id=args.group)
+        result = {
+            "action": "profile_sync",
+            "broadcast": bcast,
+            **connector.get_status(),
+            "instances": manager.list_instances(auto_scan=False),
+        }
     else:
-        if args.json:
+        if is_json:
             print(
                 json.dumps(
                     {
@@ -196,7 +283,7 @@ def run_cli(argv: list[str] | None = None) -> int:
             return 0
         return -1
 
-    if args.json:
+    if is_json:
         print(json.dumps(result, ensure_ascii=False))
     else:
         _print_human_readable(result)
@@ -206,6 +293,27 @@ def run_cli(argv: list[str] | None = None) -> int:
 
 def _print_human_readable(result: dict[str, Any]) -> None:
     action = result.get("action", "status").upper()
+
+    if "profiles" in result and "createdCount" in result:
+        print(f"=== Created {result['createdCount']} Browser Profile(s) ===")
+        for p in result["profiles"]:
+            print(f"  • {p['id']} ({p['name']}) | Port: {p['debug_port']} | Type: {p.get('browser_type')}")
+        return
+
+    if "profiles" in result and "count" in result:
+        print(f"=== Registered Browser Profiles ({result['count']}) ===")
+        for p in result["profiles"]:
+            st = "● RUNNING" if p.get("isAlive") else "○ STOPPED"
+            pid = f"(PID: {p['pid']})" if p.get("pid") else ""
+            print(f"  {st} {p['id']:<14} | Port: {p['debug_port']} | {p['browser_type'].upper()} {pid}")
+        return
+
+    if action in ("PROFILE_START_ONE", "PROFILE_START_ALL"):
+        print(f"=== Browser Launch Result: {action} ===")
+        res = result.get("result") or result.get("results")
+        print(json.dumps(res, indent=2))
+        return
+
     summary = result.get("summary", {})
     print(
         f"=== Multi_Emulator Connector [{action}] ===\n"
@@ -224,7 +332,7 @@ def _print_human_readable(result: dict[str, Any]) -> None:
     if "broadcast" in result:
         bcast = result["broadcast"]
         print(
-            f"\nBroadcast Command '{bcast['command']}' to {bcast['targetCount']} emulators:"
+            f"\nBroadcast Command '{bcast['command']}' to {bcast['targetCount']} emulators/profiles:"
         )
         for item in bcast.get("results", []):
             print(f"  * [{item['instanceId']}] -> {item['output']}")

@@ -11,8 +11,9 @@ Toàn bộ mã nguồn giao diện được tổ chức theo kiến trúc ES6 Mo
 - [`public/index.html`](file:///home/antigravity/TrungLegit/Multi_Emulator/public/index.html) (đồng bộ với [`index.html`](file:///home/antigravity/TrungLegit/Multi_Emulator/index.html)): Khung HTML5 ngữ nghĩa gồm 4 phân hệ chính:
   1. **Phone Farm Matrix (7×3 Grid):** Lưới 21 màn hình điện thoại mô phỏng thiết bị thực tế giống hệt mẫu Phone Farm Box.
   2. **Table View:** Bảng quản lý chi tiết từng máy ảo (ID, Cổng ADB/TCP, Độ phân giải, CPU/RAM, Start/Stop/Optimize/Delete).
-  3. **ADR Learning Portal:** Chuyên mục học tập Quyết định Kiến trúc (ADR-001 đến ADR-004).
-  4. **User Guide:** Hướng dẫn thao tác trực tiếp trên Web.
+  3. **ADR Learning Portal:** Chuyên mục học tập Quyết định Kiến trúc (ADR-001 đến ADR-005).
+  4. **Browser Profiles Sync Hub:** Điều khiển đồng bộ đa profile trình duyệt (Chrome, Edge, Brave) chống lag, cache 32MB và giao thức CDP.
+  5. **User Guide:** Hướng dẫn thao tác trực tiếp trên Web.
 - [`public/css/main.css`](file:///home/antigravity/TrungLegit/Multi_Emulator/public/css/main.css): Hệ thống biến màu CSS (`:root`), bố cục 2 cột (Sidebar điều khiển bên trái + Lưới 21 máy ảo bên phải), hiệu ứng sóng chạm (Tap Ripple) và quạt tản nhiệt Box.
 - [`public/js/app.js`](file:///home/antigravity/TrungLegit/Multi_Emulator/public/js/app.js): Quản lý trạng thái (`state`), gọi REST API, xử lý sự kiện chạm đồng bộ (`handlePhoneScreenTap`), chuyển đổi ứng dụng đồng loạt (TikTok, Facebook, Instagram, YouTube, Treo Game) và Modal tạo máy ảo.
 - [`public/js/websocket.js`](file:///home/antigravity/TrungLegit/Multi_Emulator/public/js/websocket.js): Kết nối kênh sự kiện thời gian thực (`/api/events`) để tự động cập nhật log và trạng thái mà không cần tải lại trang.
