@@ -1,4 +1,4 @@
-"""ADB post-boot optimizer & automation helper for TikTok and Facebook workloads."""
+"""ADB post-boot optimizer & helpers for TikTok / YouTube / Facebook."""
 
 from src.core.profiles import EmulatorProfile
 
@@ -57,19 +57,6 @@ class AdbOptimizer:
 
         return commands
 
-    def build_swipe_up_command(
-        self, width: int = 540, height: int = 960, duration_ms: int = 250
-    ) -> list[str]:
-        """Build ADB swipe gesture to scroll to the next TikTok video or Facebook post."""
-        center_x = width // 2
-        start_y = int(height * 0.78)
-        end_y = int(height * 0.22)
-        return self._adb_shell(
-            f"input swipe {center_x} {start_y} {center_x} {end_y} {duration_ms}"
-        )
-
     def build_launch_app_command(self, package_name: str) -> list[str]:
-        """Build ADB monkey command to launch TikTok or Facebook main activity."""
-        return self._adb_shell(
-            f"monkey -p {package_name} -c android.intent.category.LAUNCHER 1"
-        )
+        """Build ADB monkey command to launch an app."""
+        return self._adb_shell(f"monkey -p {package_name} -c android.intent.category.LAUNCHER 1")

@@ -45,7 +45,6 @@ class QemuCommandBuilder:
         profile: EmulatorProfile,
         overlay_disk: str | Path,
         adb_port: int,
-        headless: bool = False,
     ) -> list[str]:
         """Build the complete ultra-lightweight QEMU launch command for an Android-x86 VM."""
         cmd: list[str] = [
@@ -68,11 +67,8 @@ class QemuCommandBuilder:
         ])
 
         # 3. VirtIO-GPU 2D/VirGL graphics tuned for low-resolution social media video decoding
-        if headless or profile.profile_id == "headless_automation":
-            cmd.extend(["-display", "none", "-vga", "std"])
-        else:
-            # Standard VGA works with Android-x86 out of the box (software rendering)
-            cmd.extend(["-vga", "std", "-display", "gtk"])
+        # Standard VGA works with Android-x86 out of the box (software rendering)
+        cmd.extend(["-vga", "std", "-display", "gtk"])
 
         # 4. Audio subsystem stripping (saves CPU interrupts when muted)
         if profile.disable_audio:

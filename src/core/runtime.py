@@ -63,7 +63,7 @@ class RealRuntime:
         self._save(s)
 
     # ---------- lifecycle ----------
-    def create(self, name: str, profile_id: str = "standard_tiktok_fb") -> str:
+    def create(self, name: str, profile_id: str = "standard") -> str:
         get_profile(profile_id)
         s = self._load()
         n = len(s["instances"]) + 1
@@ -91,7 +91,7 @@ class RealRuntime:
                     check=True, capture_output=True,
                 )
         cmd = self.builder.build_launch_cmd(
-            iid, profile, disk, inst["adb_port"], headless=inst["profile"] == "headless_automation"
+            iid, profile, disk, inst["adb_port"]
         )
         cmd[0] = qemu_bin
         if is_iso:
@@ -118,12 +118,7 @@ class RealRuntime:
             raise RuntimeError_(f"QEMU thoát ngay (mã {proc.returncode}). Xem {self.ws / (iid + '.log')}")
         inst["pid"], inst["started_at"] = proc.pid, time.time()
         self._save(s)
-        if optimize:
-            self.optimize_async_hint(iid)
         return {"id": iid, "pid": proc.pid, "cmd": " ".join(cmd)}
-
-    def optimize_async_hint(self, iid: str) -> None:
-        """Tweaks need Android fully booted; they are applied by `optimize` command."""
 
     def optimize(self, iid: str, timeout: int = 180) -> int:
         """Wait for ADB, then run the optimization commands. Returns number applied."""
@@ -197,3 +192,44 @@ class RealRuntime:
                 "uptime_s": int(time.time() - inst["started_at"]) if p and inst["started_at"] else 0,
             })
         return out
+
+    # ---------- adb helpers ----------
+    def _adb(self, iid: str, *args: str, timeout: int = 60) -> subprocess.CompletedProcess:
+        inst = self._load()["instances"][iid]
+        adb = find_tool("adb")
+        serial = f"127.0.0.1:{inst['adb_port']}"
+        subprocess.run([adb, "connect", serial], capture_output=True, timeout=15)
+        return subprocess.run([adb, "-s", serial, *args], capture_output=True, text=True, timeout=timeout)
+
+    def install_apk(self, iid: str, apk: str | Path) -> str:
+        """Install an .apk file into the instance."""
+        r = self._adb(iid, "install", "-r", str(apk), timeout=300)
+        if r.returncode != 0 or "Success" not in r.stdout:
+            raise RuntimeError_(f"Cài APK lỗi: {r.stdout.strip() or r.stderr.strip()}")
+        return "Success"
+
+    def launch_app(self, iid: str, app: str) -> None:
+        """Launch tiktok / youtube / facebook."""
+        from src.core.profiles import APPS
+
+        if app not in APPS:
+            raise RuntimeError_(f"App không hỗ trợ: {app}. Chọn: {', '.join(APPS)}")
+        r = self._adb(iid, "shell", "monkey", "-p", APPS[app], "-c", "android.intent.category.LAUNCHER", "1")
+        if "No activities found" in r.stdout + r.stderr:
+            raise RuntimeError_(f"Chưa cài {app} ({APPS[app]}). Hãy cài APK trước.")
+
+    def key(self, iid: str, name: str) -> None:
+        """Send a key: home, back, recent, volup, voldown."""
+        codes = {"home": 3, "back": 4, "recent": 187, "volup": 24, "voldown": 25}
+        self._adb(iid, "shell", "input", "keyevent", str(codes[name]))
+
+    def screenshot(self, iid: str, out: str | Path) -> Path:
+        """Save a PNG screenshot to `out`."""
+        inst = self._load()["instances"][iid]
+        adb = find_tool("adb")
+        serial = f"127.0.0.1:{inst['adb_port']}"
+        r = subprocess.run([adb, "-s", serial, "exec-out", "screencap", "-p"], capture_output=True, timeout=30)
+        if r.returncode != 0 or not r.stdout:
+            raise RuntimeError_("Chụp màn hình thất bại (Android đã boot chưa?)")
+        Path(out).write_bytes(r.stdout)
+        return Path(out)
