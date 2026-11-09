@@ -7,7 +7,7 @@ import sys
 
 from src.core.cli import run_cli
 
-VM_COMMANDS = {"demo", "set-image", "create", "start", "stop", "optimize"}
+VM_COMMANDS = {"demo", "set-image", "create", "start", "stop", "optimize", "vm-status"}
 
 
 def get_project_info() -> dict[str, str]:
@@ -27,7 +27,7 @@ def main(argv: list[str] | None = None) -> None:
         print(f"{info['name']} v{info['version']} — {info['description']}")
         print(
             "Usage: python3 main.py [scan | connect | link | broadcast | disconnect | status] [--json]\n"
-            "Real VMs: python3 main.py [set-image | create | start | stop | optimize | demo] (see docs/RUN_REAL.md)"
+            "Real VMs: python3 main.py [set-image | create | start | stop | optimize | vm-status | demo] (see docs/RUN_REAL.md)"
         )
         return
 

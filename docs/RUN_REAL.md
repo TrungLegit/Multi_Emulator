@@ -10,7 +10,7 @@ python main.py set-image C:\path\android-x86_64-9.0-r2.iso
 python main.py create Tiktok1 --profile standard_tiktok_fb
 python main.py start emu_01
 python main.py optimize emu_01    # sau khi Android boot xong, áp dụng tối ưu qua ADB
-python main.py status             # RAM/CPU thật của tiến trình QEMU
+python main.py vm-status           # RAM/CPU thật của tiến trình QEMU
 python main.py stop emu_01
 ```
 Lần đầu với file .iso: chọn "Live CD / Install to disk" của Android-x86 (ổ 8G qcow2 mỏng được tạo sẵn).

@@ -59,7 +59,7 @@ def run_vm_cli(argv: list[str]) -> None:
     for c in ("start", "stop", "optimize"):
         p = sub.add_parser(c)
         p.add_argument("id")
-    sub.add_parser("status", help="RAM/CPU thật của các máy đang chạy")
+    sub.add_parser("vm-status", help="RAM/CPU thật của các máy đang chạy")
     args = parser.parse_args(argv)
 
     if args.cmd in (None, "demo"):
@@ -84,7 +84,7 @@ def run_vm_cli(argv: list[str]) -> None:
             print("Đã dừng" if rt.stop(args.id) else "Máy không chạy")
         elif args.cmd == "optimize":
             print("Đã áp dụng", rt.optimize(args.id), "lệnh tối ưu")
-        elif args.cmd == "status":
+        elif args.cmd == "vm-status":
             for r in rt.status():
                 print(f"{r['id']} {r['name']:<16} {r['status']:<8} PID={r['pid']} "
                       f"RAM={r['ram_mb']}MB CPU={r['cpu_percent']}% ADB={r['adb']}")
