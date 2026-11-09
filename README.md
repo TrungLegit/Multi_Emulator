@@ -42,6 +42,47 @@
    npm install
    ```
 
+## Hướng Dẫn Sử Dụng Nhanh (Quick Usage — Python Connector CLI)
+
+Module **Emulator Connector** cho phép quét tất cả các máy ảo hiện có (qua ADB, cổng TCP nội bộ `5554-5566`, `62001`, `21503` hoặc chế độ Mock tự động), kết nối chúng lại và gom vào một **Sync Hub** chung:
+
+```bash
+# 1. Quét (Scan) tất cả các emulator hiện có trên máy
+python3 main.py scan
+
+# 2. Kết nối tất cả các emulator đã quét và tự động gom vào Sync Hub chung
+python3 main.py connect --all
+
+# 3. Kết nối riêng lẻ 1 emulator theo ID
+python3 main.py connect --id emu_01
+
+# 4. Liên kết (Link) các emulator cụ thể vào một nhóm đồng bộ và chọn máy Master
+python3 main.py link --ids emu_01 emu_02 emu_03 --group sync_hub_default --master emu_01
+
+# 5. Phát lệnh đồng bộ (Broadcast) tới tất cả emulator trong Sync Hub
+python3 main.py broadcast --cmd "input tap 540 960"
+
+# 6. Kiểm tra trạng thái hiện tại của Connector Pool & Sync Hub
+python3 main.py status
+
+# 7. Xuất kết quả dạng JSON (dùng cho IPC với Node.js hoặc debug)
+python3 main.py status --json
+
+# 8. Ngắt kết nối một hoặc toàn bộ emulator
+python3 main.py disconnect --id emu_02
+python3 main.py disconnect
+
+# 9. Chạy bộ Unit Tests kiểm thử Connector
+python3 -m unittest discover -s tests -p "test_*.py" -v
+```
+
+### Khởi chạy Giao diện Web Dashboard (Node.js + HTML)
+
+```bash
+npm start
+# Truy cập http://localhost:3000 để sử dụng bảng điều khiển Scan / Connect / Broadcast trực quan
+```
+
 ## Contributing
 
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) and our [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details on how to submit pull requests and report issues.
