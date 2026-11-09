@@ -7,8 +7,6 @@ import sys
 
 from src.core.cli import run_cli
 
-VM_COMMANDS = {"set-image", "create", "start", "stop", "optimize", "vm-status", "install", "open", "gui"}
-
 
 def get_project_info() -> dict[str, str]:
     """Return metadata about the Multi_Emulator project."""
@@ -26,15 +24,8 @@ def main(argv: list[str] | None = None) -> None:
         info = get_project_info()
         print(f"{info['name']} v{info['version']} — {info['description']}")
         print(
-            "Usage: python3 main.py [scan | connect | link | broadcast | disconnect | status] [--json]\n"
-            "Real VMs: python3 main.py [set-image | create | start | stop | optimize | install | open | vm-status | gui] (see docs/RUN_REAL.md)"
+            "Usage: python3 main.py [scan | connect | link | broadcast | disconnect | status | profile-create | profile-start | profile-stop | profile-list | profile-sync] [--json]"
         )
-        return
-
-    if args[0] in VM_COMMANDS or args[0] == "--workspace":
-        from src.core.vm_cli import run_vm_cli
-
-        run_vm_cli(args)
         return
 
     code = run_cli(args)

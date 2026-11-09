@@ -1,9 +1,10 @@
-# Core
+# Python dependencies for Multi_Emulator
+# Install with: pip install -r requirements.txt
+
+# Core utilities
 python-dotenv>=1.0.0
 requests>=2.31.0
-psutil>=5.9.0
-PySide6-Essentials>=6.6
 
-# Dev
+# Development & testing
 pytest>=8.0.0
 ruff>=0.4.0

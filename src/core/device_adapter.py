@@ -359,27 +359,50 @@ class MockDeviceAdapter(DeviceAdapter):
 
 
 class CompositeDiscoveryAdapter(DeviceAdapter):
-    """Combines real ADB/TCP discovery with automatic or explicit Mock fallback."""
+    """Combines ADB, Browser Profiles, and Mock discovery into a unified hub."""
 
     def __init__(
         self,
         adb_adapter: ADBDeviceAdapter | None = None,
         mock_adapter: MockDeviceAdapter | None = None,
+        browser_adapter: DeviceAdapter | None = None,
         include_mock_when_empty: bool = True,
         force_mock: bool = False,
+        include_browser_profiles: bool = True,
     ) -> None:
         self.adb_adapter = adb_adapter or ADBDeviceAdapter()
         self.mock_adapter = mock_adapter or MockDeviceAdapter()
         self.include_mock_when_empty = include_mock_when_empty
         self.force_mock = force_mock
+        self.include_browser_profiles = include_browser_profiles
+
+        if browser_adapter is not None:
+            self.browser_adapter = browser_adapter
+        else:
+            from src.core.browser_adapter import BrowserProfileAdapter
+
+            self.browser_adapter = BrowserProfileAdapter()
 
     def scan(self) -> list[DiscoveredDevice]:
         if self.force_mock:
             return self.mock_adapter.scan()
 
+        all_devices: list[DiscoveredDevice] = []
+
+        # 1. Discover browser profiles
+        if self.include_browser_profiles and self.browser_adapter:
+            try:
+                all_devices.extend(self.browser_adapter.scan())
+            except Exception:
+                pass
+
+        # 2. Discover real ADB / emulator endpoints
         real_devices = self.adb_adapter.scan()
         if real_devices:
-            return real_devices
+            all_devices.extend(real_devices)
+
+        if all_devices:
+            return all_devices
 
         if self.include_mock_when_empty:
             return self.mock_adapter.scan()
@@ -387,6 +410,8 @@ class CompositeDiscoveryAdapter(DeviceAdapter):
         return []
 
     def _select_adapter(self, device: DiscoveredDevice) -> DeviceAdapter:
+        if device.source == "browser_cdp" or device.emulator_type == "browser_profile":
+            return self.browser_adapter
         if device.source == "mock":
             return self.mock_adapter
         return self.adb_adapter

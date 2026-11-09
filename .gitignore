@@ -72,3 +72,4 @@ out/
 .DS_Store
 Thumbs.db
 vm_data/
+browser_profiles/
