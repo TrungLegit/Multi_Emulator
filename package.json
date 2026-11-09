@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"No tests specified yet\" && exit 0"
+    "test": "python3 -m unittest discover -s tests -p \"test_*.py\" -v"
   },
   "repository": {
     "type": "git",

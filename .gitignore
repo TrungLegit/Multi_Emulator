@@ -59,6 +59,7 @@ out/
 .env
 .env.*
 !.env.example
+.connector_state.json
 
 # =========================
 # IDEs & OS
