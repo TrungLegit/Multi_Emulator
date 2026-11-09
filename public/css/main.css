@@ -1,0 +1,1051 @@
+/* ==========================================================================
+   Multi_Emulator — Phone Farm Box & Ultra-Lite Android Control Center
+   File: public/css/main.css (Deliverable for Chương — Frontend Engineer Lead)
+   ========================================================================== */
+
+:root {
+  --bg-deep: #070b14;
+  --bg-panel: #0f172a;
+  --bg-panel-elevated: #162038;
+  --bg-card: #1e293b;
+  --bg-card-hover: #26354d;
+  --sidebar-light: #f8fafc;
+  --sidebar-border: #cbd5e1;
+  --border-subtle: rgba(148, 163, 184, 0.16);
+  --border-cyan: rgba(56, 189, 248, 0.45);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dark: #0f172a;
+  --accent-cyan: #38bdf8;
+  --accent-blue: #2563eb;
+  --accent-blue-hover: #1d4ed8;
+  --accent-orange: #f59e0b;
+  --status-running: #22c55e;
+  --status-starting: #f59e0b;
+  --status-stopped: #64748b;
+  --status-error: #ef4444;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.65);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-deep);
+  background-image: radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.12), transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(56, 189, 248, 0.08), transparent 45%);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   1. Top Header & Navigation Bar
+   -------------------------------------------------------------------------- */
+.top-navbar {
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.pf-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+  border: 2px solid var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1.15rem;
+  letter-spacing: -0.03em;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+}
+
+.pf-logo .pf-p {
+  color: var(--accent-orange);
+}
+
+.pf-logo .pf-f {
+  color: #ffffff;
+}
+
+.brand-titles h1 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.brand-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.18rem 0.55rem;
+  border-radius: 99px;
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.brand-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 0.45rem;
+  background: #090e1a;
+  padding: 0.3rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.nav-tab {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  padding: 0.48rem 0.95rem;
+  border-radius: 7px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-tab:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-tab.active {
+  background: var(--accent-blue);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.4);
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.ws-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.35rem 0.7rem;
+  border-radius: 99px;
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.ws-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+/* --------------------------------------------------------------------------
+   2. Overview Metric Strip (PLAN.md Section 3.A.2)
+   -------------------------------------------------------------------------- */
+.metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+  gap: 0.75rem;
+  padding: 0.85rem 1.5rem 0;
+}
+
+.metric-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.metric-info .metric-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.metric-info .metric-value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-top: 0.2rem;
+  color: var(--text-main);
+}
+
+.metric-info .metric-sub {
+  font-size: 0.7rem;
+  color: var(--accent-cyan);
+  margin-top: 0.1rem;
+}
+
+.metric-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+/* --------------------------------------------------------------------------
+   3. Main Phone Farm Box Workspace (Matches Reference Image Layout)
+   -------------------------------------------------------------------------- */
+.workspace-container {
+  flex: 1;
+  padding: 0.85rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+/* Outer glowing frame inspired by "UNMATCHED AUTOMATION CONTROL" monitor in image.png */
+.farm-monitor-frame {
+  background: #0b1324;
+  border: 1px solid var(--border-cyan);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 28px rgba(56, 189, 248, 0.12), var(--shadow-soft);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.farm-monitor-banner {
+  background: linear-gradient(90deg, #0f172a 0%, #1e3a8a 50%, #0f172a 100%);
+  border-bottom: 1px solid var(--border-cyan);
+  padding: 0.45rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #e0f2fe;
+}
+
+.farm-monitor-body {
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  min-height: 620px;
+}
+
+/* Left Automation Control Sidebar (Styled like Plufine sidebar in image.png) */
+.control-sidebar {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-right: 2px solid #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+
+.sidebar-brand-header {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  color: #ffffff;
+  padding: 0.75rem 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.sidebar-brand-logo {
+  width: 36px;
+  height: 36px;
+  background: #ffffff;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 0.95rem;
+  color: #1e3a8a;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-brand-logo span {
+  color: #f59e0b;
+}
+
+.sidebar-brand-text h2 {
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.sidebar-brand-text p {
+  font-size: 0.68rem;
+  opacity: 0.88;
+}
+
+.sidebar-section {
+  padding: 0.65rem 0.8rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.sidebar-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #475569;
+  margin-bottom: 0.45rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Compact button grid inside left sidebar */
+.ctrl-btn-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.38rem;
+}
+
+.ctrl-btn-grid.cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.ctrl-btn-grid.cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.ctrl-btn {
+  background: #ffffff;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  padding: 0.4rem 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  transition: all 0.12s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.ctrl-btn:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.ctrl-btn.primary {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #1d4ed8;
+}
+
+.ctrl-btn.primary:hover {
+  background: #1d4ed8;
+}
+
+.ctrl-btn.success {
+  background: #16a34a;
+  color: #ffffff;
+  border-color: #15803d;
+}
+
+.ctrl-btn.danger {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+.ctrl-btn.active-app {
+  background: #1e3a8a;
+  color: #ffffff;
+  border-color: #1e3a8a;
+}
+
+/* Sliders in left sidebar (Scroll Speed, Swipe Delay, FPS, Scale) */
+.slider-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 0.45rem;
+}
+
+.slider-row:last-child {
+  margin-bottom: 0;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.slider-row input[type="range"] {
+  width: 100%;
+  accent-color: #2563eb;
+  height: 5px;
+  cursor: pointer;
+}
+
+/* Sync broadcast input inside sidebar */
+.sidebar-cmd-box {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.sidebar-cmd-box input {
+  flex: 1;
+  padding: 0.38rem 0.5rem;
+  font-size: 0.74rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+/* Device Checklist inside sidebar */
+.sidebar-device-list {
+  max-height: 135px;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  padding: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.sidebar-device-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.71rem;
+  padding: 0.2rem 0.35rem;
+  border-radius: 4px;
+}
+
+.sidebar-device-item:hover {
+  background: #f1f5f9;
+}
+
+.sidebar-device-item label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* Hardware Box Status Card at bottom of sidebar (like server rack box preview in image.png) */
+.hardware-box-card {
+  margin-top: auto;
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 0.65rem 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border-top: 2px solid #38bdf8;
+}
+
+.fan-column {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fan-ring {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px dashed #38bdf8;
+  animation: spinFan 3s linear infinite;
+}
+
+@keyframes spinFan {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hardware-box-meta {
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.hardware-box-meta strong {
+  color: #38bdf8;
+  display: block;
+  font-size: 0.74rem;
+}
+
+/* --------------------------------------------------------------------------
+   4. Right Phone Matrix Area (7x3 Grid of White Phone Bezels like image.png)
+   -------------------------------------------------------------------------- */
+.phone-matrix-workspace {
+  background: #cbd5e1;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  overflow-y: auto;
+}
+
+.matrix-top-bar {
+  background: #ffffff;
+  border: 1px solid #94a3b8;
+  border-radius: 8px;
+  padding: 0.45rem 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  color: #0f172a;
+  font-size: 0.78rem;
+}
+
+.matrix-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.phone-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 0.65rem;
+  align-content: start;
+}
+
+/* White Smartphone Bezel Card matching image.png */
+.phone-bezel {
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 2px solid #94a3b8;
+  border-radius: 14px;
+  padding: 5px 5px 6px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
+  transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.phone-bezel:hover {
+  transform: translateY(-2px);
+  border-color: #2563eb;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.28);
+}
+
+.phone-bezel.is-master {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.35);
+}
+
+.phone-bezel.is-stopped {
+  opacity: 0.68;
+  filter: grayscale(0.5);
+}
+
+/* Top bar of each phone: green number badge + speaker slot + status dot */
+.phone-top-chin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1px 4px 4px;
+}
+
+.phone-slot-badge {
+  background: #16a34a;
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+  line-height: 1.2;
+}
+
+.phone-bezel.is-stopped .phone-slot-badge {
+  background: #64748b;
+}
+
+.phone-earpiece {
+  width: 24px;
+  height: 3px;
+  background: #94a3b8;
+  border-radius: 99px;
+}
+
+.phone-fps-tag {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+/* Inner Phone Screen */
+.phone-screen {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  aspect-ratio: 9 / 15.2;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.phone-screen.stopped-screen {
+  background: #0f172a;
+  color: #64748b;
+}
+
+/* Status bar inside phone screen */
+.android-status-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 15px;
+  padding: 0 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.54rem;
+  font-weight: 700;
+  color: #475569;
+  background: rgba(241, 245, 249, 0.85);
+  z-index: 2;
+}
+
+/* Center App Visual (TikTok Note / FB / IG / Game) matching image.png */
+.phone-app-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+  height: 100%;
+  padding: 16px 6px 20px;
+  text-align: center;
+  transition: transform 0.22s ease;
+}
+
+.app-icon-box {
+  width: 46px;
+  height: 46px;
+  border-radius: 11px;
+  background: #090d16;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+  font-weight: 900;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+  position: relative;
+}
+
+.app-icon-box.tiktok-icon {
+  background: #000000;
+  text-shadow: -1.5px -1px 0 #25f4ee, 1.5px 1px 0 #fe2c55;
+}
+
+.app-icon-box.facebook-icon {
+  background: #1877f2;
+}
+
+.app-icon-box.instagram-icon {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+}
+
+.app-icon-box.youtube-icon {
+  background: #ff0000;
+}
+
+.app-icon-box.game-icon {
+  background: linear-gradient(135deg, #d97706, #7c2d12);
+}
+
+.phone-app-caption {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #1e293b;
+  max-width: 95%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.phone-metrics-overlay {
+  position: absolute;
+  bottom: 2px;
+  left: 4px;
+  right: 4px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.54rem;
+  color: #475569;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.88);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+/* Visual tap ripple animation on synchronized touch */
+.tap-ripple {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.45);
+  border: 2px solid #2563eb;
+  transform: translate(-50%, -50%) scale(0.3);
+  animation: ripplePop 0.55s ease-out forwards;
+  pointer-events: none;
+  z-index: 10;
+}
+
+@keyframes ripplePop {
+  0% {
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.9);
+    opacity: 0;
+  }
+}
+
+/* Bottom Chin of Phone Bezel: Home circle button + Quick actions */
+.phone-bottom-chin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 4px 0;
+}
+
+.phone-mini-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.65rem;
+  color: #475569;
+  cursor: pointer;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.phone-mini-btn:hover {
+  background: #cbd5e1;
+  color: #0f172a;
+}
+
+.phone-home-circle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid #94a3b8;
+  background: #f8fafc;
+}
+
+/* --------------------------------------------------------------------------
+   5. Bottom Live Console & Sync Telemetry Dock
+   -------------------------------------------------------------------------- */
+.bottom-dock {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 0.85rem;
+}
+
+.console-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.console-log-output {
+  background: #050811;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 0.65rem 0.8rem;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.76rem;
+  color: #cbd5e1;
+  height: 135px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  line-height: 1.45;
+}
+
+/* --------------------------------------------------------------------------
+   6. Detailed Table View & ADR Learning Portal Tabs
+   -------------------------------------------------------------------------- */
+.data-table-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.instances-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+}
+
+.instances-table th,
+.instances-table td {
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.instances-table th {
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+}
+
+.adr-portal-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 1rem;
+  min-height: 540px;
+}
+
+.adr-list-sidebar {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.adr-item-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  text-align: left;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.adr-item-btn:hover,
+.adr-item-btn.active {
+  border-color: var(--accent-cyan);
+  background: var(--bg-card-hover);
+}
+
+.adr-reader-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 2rem;
+  line-height: 1.65;
+  overflow-y: auto;
+}
+
+.adr-reader-card h1,
+.adr-reader-card h2,
+.adr-reader-card h3 {
+  color: var(--accent-cyan);
+  margin: 1rem 0 0.5rem;
+}
+
+.adr-reader-card h1 {
+  margin-top: 0;
+  font-size: 1.35rem;
+}
+
+.adr-reader-card ul,
+.adr-reader-card ol {
+  padding-left: 1.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.adr-reader-card code {
+  background: #090d16;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  color: #38bdf8;
+  font-size: 0.85em;
+}
+
+/* --------------------------------------------------------------------------
+   7. Modal Popup & Toast Notifications (PLAN.md Section 3.A.4)
+   -------------------------------------------------------------------------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 11, 20, 0.78);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-backdrop.open {
+  display: flex;
+}
+
+.modal-dialog {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-cyan);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 460px;
+  padding: 1.35rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.form-group {
+  margin-bottom: 0.85rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.3rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  background: #090e1a;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  color: var(--text-main);
+  font-size: 0.85rem;
+}
+
+.toast-container {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 200;
+}
+
+.toast-item {
+  background: #1e293b;
+  color: #f8fafc;
+  border-left: 4px solid var(--accent-cyan);
+  padding: 0.65rem 1rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-soft);
+  animation: slideInRight 0.2s ease;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 980px) {
+  .farm-monitor-body {
+    grid-template-columns: 1fr;
+  }
+  .bottom-dock {
+    grid-template-columns: 1fr;
+  }
+  .adr-portal-layout {
+    grid-template-columns: 1fr;
+  }
+}
