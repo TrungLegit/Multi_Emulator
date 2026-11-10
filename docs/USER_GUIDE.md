@@ -12,7 +12,7 @@ Toàn bộ mã nguồn giao diện được tổ chức theo kiến trúc ES6 Mo
   1. **Phone Farm Matrix (7×3 Grid):** Lưới 21 màn hình điện thoại mô phỏng thiết bị thực tế giống hệt mẫu Phone Farm Box.
   2. **Table View:** Bảng quản lý chi tiết từng máy ảo (ID, Cổng ADB/TCP, Độ phân giải, CPU/RAM, Start/Stop/Optimize/Delete).
   3. **ADR Learning Portal:** Chuyên mục học tập Quyết định Kiến trúc (ADR-001 đến ADR-005).
-  4. **Browser Profiles Sync Hub:** Điều khiển đồng bộ đa profile trình duyệt (Chrome, Edge, Brave) chống lag, cache 32MB và giao thức CDP.
+  4. **Browser Profiles Sync Hub:** Tạo, chạy, dừng và điều khiển đồng bộ các profile Chromium qua CDP.
   5. **User Guide:** Hướng dẫn thao tác trực tiếp trên Web.
 - [`public/css/main.css`](file:///home/antigravity/TrungLegit/Multi_Emulator/public/css/main.css): Hệ thống biến màu CSS (`:root`), bố cục 2 cột (Sidebar điều khiển bên trái + Lưới 21 máy ảo bên phải), hiệu ứng sóng chạm (Tap Ripple) và quạt tản nhiệt Box.
 - [`public/js/app.js`](file:///home/antigravity/TrungLegit/Multi_Emulator/public/js/app.js): Quản lý trạng thái (`state`), gọi REST API, xử lý sự kiện chạm đồng bộ (`handlePhoneScreenTap`), chuyển đổi ứng dụng đồng loạt (TikTok, Facebook, Instagram, YouTube, Treo Game) và Modal tạo máy ảo.
@@ -33,3 +33,14 @@ Toàn bộ mã nguồn giao diện được tổ chức theo kiến trúc ES6 Mo
    ```bash
    npm test
    ```
+
+## 3. Quản lý Browser Profiles
+
+Mở tab **Browser Sync Hub** sau khi khởi chạy server:
+
+1. Chọn số lượng (1–50) và loại trình duyệt, sau đó bấm **Tạo Profiles**. Trình duyệt cần được cài trên máy chạy server; có thể đặt `BROWSER_BIN` để chỉ định executable.
+2. Bấm **Chạy tất cả** hoặc nút **Chạy** trên từng profile. Danh sách hiển thị trạng thái CDP và cổng gỡ lỗi của từng profile. **Dừng** đóng profile đã chọn; **Dừng tất cả** đóng toàn bộ.
+3. Nhập URL rồi bấm **Mở trên profiles đang chạy**, hoặc dùng nút TikTok, Facebook, YouTube, Google. Các lệnh cuộn, tải lại, click CSS selector và nhập văn bản được gửi qua `/api/browser/sync`.
+4. Danh sách trạng thái được tải lại sau thao tác và khi nhận sự kiện SSE từ `/api/events`. Nếu thay đổi trạng thái ngoài dashboard, bấm **Làm mới** để truy vấn lại.
+
+Các thao tác đồng bộ chỉ chạy trên profile đang kết nối CDP. Trình duyệt có thể giới hạn thao tác DOM, và một số website có thể chặn tương tác tự động.

@@ -67,6 +67,7 @@ class MultiEmulatorApp {
       syncEnabled: true,
       autoScrollTimer: null,
       logFilter: "ALL",
+      browserProfiles: [],
     };
 
     this.adrViewer = new AdrViewer("adr-list-container", "adr-reader-container");
@@ -84,6 +85,8 @@ class MultiEmulatorApp {
 
     // Load initial state; if fewer than 6 instances exist, auto-load the 21-slot Phone Farm Box preset
     await this.loadInitialFarm();
+    this.bindBrowserHub();
+    await this.loadBrowserProfiles();
     await this.adrViewer.loadAdrs();
   }
 
@@ -591,6 +594,124 @@ class MultiEmulatorApp {
     if (!evt || !evt.event) return;
     const msg = evt.payload?.message || JSON.stringify(evt.payload || {});
     this.appendLog(`[${evt.event}] ${msg}`);
+    if (evt.event.startsWith("BROWSER_PROFILE_")) this.loadBrowserProfiles();
+  }
+
+  bindBrowserHub() {
+    const bind = (id, handler) => document.getElementById(id)?.addEventListener("click", handler);
+    bind("browser-refresh", () => this.loadBrowserProfiles());
+    bind("browser-create", () => this.createBrowserProfiles());
+    bind("browser-start-all", () => this.runBrowserProfileAction("start"));
+    bind("browser-stop-all", () => this.runBrowserProfileAction("stop"));
+    bind("browser-click-selector", () => {
+      const selector = document.getElementById("browser-selector")?.value.trim();
+      if (selector) this.syncBrowserAction(`click ${selector}`);
+      else this.showToast("Nhập CSS selector trước");
+    });
+    bind("browser-type-submit", () => {
+      const text = document.getElementById("browser-type-text")?.value;
+      if (text) this.syncBrowserAction(`type ${text}`);
+      else this.showToast("Nhập nội dung cần gõ trước");
+    });
+    document.querySelector("[data-browser-nav]")?.addEventListener("click", () => this.navigateBrowserProfiles());
+    document.querySelectorAll("[data-browser-command]").forEach((button) => button.addEventListener("click", () => this.syncBrowserAction(button.dataset.browserCommand)));
+    document.querySelectorAll("[data-browser-quick-url]").forEach((button) => button.addEventListener("click", () => {
+      const input = document.getElementById("browser-url");
+      if (input) input.value = button.dataset.browserQuickUrl;
+      this.navigateBrowserProfiles(button.dataset.browserQuickUrl);
+    }));
+    document.getElementById("browser-profile-grid")?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-profile-action]");
+      if (!button) return;
+      this.runBrowserProfileAction(button.dataset.profileAction, button.dataset.profileId);
+    });
+  }
+
+  async browserApi(path, body) {
+    const response = await fetch(path, body ? {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    } : undefined);
+    const data = await response.json();
+    if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
+    return data;
+  }
+
+  async loadBrowserProfiles() {
+    const summary = document.getElementById("browser-profile-summary");
+    try {
+      const data = await this.browserApi("/api/browser/profiles");
+      this.state.browserProfiles = data.profiles || [];
+      this.renderBrowserProfiles();
+    } catch (err) {
+      if (summary) summary.textContent = `Không tải được profiles: ${err.message}`;
+    }
+  }
+
+  renderBrowserProfiles() {
+    const profiles = this.state.browserProfiles;
+    const running = profiles.filter((profile) => profile.isAlive).length;
+    const summary = document.getElementById("browser-profile-summary");
+    const grid = document.getElementById("browser-profile-grid");
+    if (summary) summary.textContent = `${profiles.length} profiles · ${running} đang chạy · ${profiles.length - running} đã dừng`;
+    if (!grid) return;
+    if (!profiles.length) {
+      grid.innerHTML = '<div class="browser-empty">Chưa có profile. Tạo profile mới để bắt đầu.</div>';
+      return;
+    }
+    grid.innerHTML = profiles.map((profile) => {
+      const isRunning = Boolean(profile.isAlive);
+      const browser = (profile.browser_type || "browser").toUpperCase();
+      return `<article class="browser-profile-card ${isRunning ? "is-running" : ""}">
+        <div class="browser-profile-card-head"><span class="browser-icon">🌐</span><span class="browser-status ${isRunning ? "online" : "offline"}">${isRunning ? "ĐANG CHẠY" : "ĐÃ DỪNG"}</span></div>
+        <h3>${this.escapeHtml(profile.name || profile.id)}</h3><p>${this.escapeHtml(profile.id)} · ${this.escapeHtml(browser)}</p>
+        <p>Cổng CDP: <code>${this.escapeHtml(profile.debug_port)}</code></p>
+        <div class="browser-profile-actions"><button class="ctrl-btn primary" data-profile-action="start" data-profile-id="${this.escapeHtml(profile.id)}">▶ Chạy</button><button class="ctrl-btn danger" data-profile-action="stop" data-profile-id="${this.escapeHtml(profile.id)}">■ Dừng</button></div>
+      </article>`;
+    }).join("");
+  }
+
+  escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+  }
+
+  async createBrowserProfiles() {
+    const count = Number(document.getElementById("browser-create-count")?.value || 1);
+    const browserType = document.getElementById("browser-create-type")?.value || "auto";
+    if (!Number.isInteger(count) || count < 1 || count > 50) return this.showToast("Số lượng profile phải từ 1 đến 50");
+    try {
+      const data = await this.browserApi("/api/browser/profiles/create", { count, browserType });
+      this.appendLog(`Đã tạo ${data.createdCount ?? data.profiles?.length ?? count} browser profile.`);
+      this.showToast("Đã tạo browser profiles");
+      await this.loadBrowserProfiles();
+    } catch (err) { this.appendLog(`Lỗi tạo profile: ${err.message}`, "ERROR"); }
+  }
+
+  async runBrowserProfileAction(action, profileId = null) {
+    try {
+      const data = await this.browserApi(`/api/browser/profiles/${action}`, profileId ? { profileId } : {});
+      this.appendLog(`Browser ${action}: ${JSON.stringify(data.results || data.result || data.stoppedIds || data).slice(0, 500)}`);
+      await this.loadBrowserProfiles();
+    } catch (err) { this.appendLog(`Lỗi browser ${action}: ${err.message}`, "ERROR"); }
+  }
+
+  async navigateBrowserProfiles(url = null) {
+    const target = url || document.getElementById("browser-url")?.value.trim();
+    if (!target) return this.showToast("Nhập URL cần mở");
+    await this.syncBrowserAction(`goto ${target}`);
+  }
+
+  async syncBrowserAction(command) {
+    try {
+      const data = await this.browserApi("/api/browser/sync", { command });
+      const broadcast = data.broadcast || {};
+      const outcomes = broadcast.results || [];
+      const succeeded = outcomes.filter((result) => result.ok).length;
+      this.appendLog(`Browser sync “${command}”: ${succeeded}/${broadcast.targetCount ?? outcomes.length} thành công.`);
+      if (outcomes.length) outcomes.forEach((result) => this.appendLog(`[${result.instanceId || result.name}] ${result.ok ? "OK" : "ERROR"}: ${result.output || result.error || ""}`));
+      this.showToast(`Đã gửi thao tác tới ${broadcast.targetCount ?? outcomes.length} profile`);
+    } catch (err) { this.appendLog(`Lỗi browser sync: ${err.message}`, "ERROR"); }
   }
 
   updateWsBadge(isOnline, text) {

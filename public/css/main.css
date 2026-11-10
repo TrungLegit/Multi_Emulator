@@ -866,6 +866,43 @@ body {
   overflow-x: auto;
 }
 
+.browser-hub {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+}
+.browser-hub-header, .browser-toolbar, .browser-profile-card-head, .browser-profile-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.browser-hub-header { justify-content: space-between; margin-bottom: 0.9rem; }
+.browser-hub-header h2 { color: var(--accent-cyan); font-size: 1.15rem; }
+.browser-hub-header p { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem; }
+.browser-toolbar { flex-wrap: wrap; margin-bottom: 0.65rem; }
+.browser-toolbar label { display: flex; align-items: center; gap: 0.4rem; color: var(--text-muted); font-size: 0.78rem; }
+.browser-toolbar input, .browser-toolbar select {
+  min-width: 90px; padding: 0.48rem 0.6rem; background: #090e1a;
+  border: 1px solid var(--border-subtle); border-radius: 5px; color: var(--text-main);
+}
+.browser-sync-toolbar input:first-child { flex: 1; min-width: 190px; }
+.browser-profile-summary { color: var(--text-muted); font-size: 0.8rem; padding: 0.55rem 0; }
+.browser-profile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.7rem; }
+.browser-profile-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 0.85rem; }
+.browser-profile-card.is-running { border-color: rgba(34, 197, 94, 0.55); }
+.browser-profile-card h3 { margin: 0.65rem 0 0.2rem; font-size: 0.9rem; overflow-wrap: anywhere; }
+.browser-profile-card p { color: var(--text-muted); font-size: 0.74rem; margin: 0.25rem 0; }
+.browser-profile-card code { color: var(--accent-cyan); }
+.browser-profile-card-head { justify-content: space-between; }
+.browser-icon { font-size: 1.3rem; }
+.browser-status { font-size: 0.64rem; font-weight: 800; }
+.browser-status.online { color: #4ade80; }
+.browser-status.offline { color: #94a3b8; }
+.browser-profile-actions { margin-top: 0.75rem; }
+.browser-profile-actions .ctrl-btn { flex: 1; }
+.browser-empty { color: var(--text-muted); padding: 1.25rem; border: 1px dashed var(--border-subtle); border-radius: 8px; }
+
 .instances-table {
   width: 100%;
   border-collapse: collapse;
@@ -1048,4 +1085,5 @@ body {
   .adr-portal-layout {
     grid-template-columns: 1fr;
   }
+  .browser-hub-header { align-items: flex-start; }
 }

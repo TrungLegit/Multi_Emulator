@@ -32,6 +32,9 @@
       <button class="nav-tab" data-tab="table" id="tab-btn-table">
         📊 Quản lý Chi tiết (Table View)
       </button>
+      <button class="nav-tab" data-tab="browser" id="tab-btn-browser">
+        🌐 Browser Sync Hub
+      </button>
       <button class="nav-tab" data-tab="adr" id="tab-btn-adr">
         📚 Học tập Kiến trúc (ADR Portal)
       </button>
@@ -327,6 +330,41 @@
         </table>
       </div>
     </div>
+
+    <section class="tab-panel" id="panel-browser">
+      <div class="browser-hub">
+        <div class="browser-hub-header">
+          <div><h2>Browser Profile Sync Hub</h2><p>Quản lý profile Chromium riêng biệt và gửi thao tác qua CDP.</p></div>
+          <button class="ctrl-btn" id="browser-refresh">↻ Làm mới</button>
+        </div>
+        <div class="browser-toolbar">
+          <label>Tạo nhanh <input id="browser-create-count" type="number" min="1" max="50" value="5" /></label>
+          <label>Loại trình duyệt <select id="browser-create-type"><option value="auto">Tự động</option><option value="chrome">Chrome</option><option value="edge">Edge</option><option value="brave">Brave</option></select></label>
+          <button class="ctrl-btn primary" id="browser-create">＋ Tạo Profiles</button>
+          <button class="ctrl-btn success" id="browser-start-all">▶ Chạy tất cả</button>
+          <button class="ctrl-btn danger" id="browser-stop-all">■ Dừng tất cả</button>
+        </div>
+        <div class="browser-toolbar browser-sync-toolbar">
+          <input id="browser-url" type="url" placeholder="https://example.com" aria-label="URL đồng bộ" />
+          <button class="ctrl-btn primary" data-browser-nav>↗ Mở trên profiles đang chạy</button>
+          <button class="ctrl-btn" data-browser-quick-url="https://www.tiktok.com">TikTok</button>
+          <button class="ctrl-btn" data-browser-quick-url="https://www.facebook.com">Facebook</button>
+          <button class="ctrl-btn" data-browser-quick-url="https://www.youtube.com">YouTube</button>
+          <button class="ctrl-btn" data-browser-quick-url="https://www.google.com">Google</button>
+        </div>
+        <div class="browser-toolbar browser-sync-toolbar">
+          <button class="ctrl-btn" data-browser-command="scroll-down">⬇ Cuộn xuống</button>
+          <button class="ctrl-btn" data-browser-command="scroll-up">⬆ Cuộn lên</button>
+          <button class="ctrl-btn" data-browser-command="reload">↻ Tải lại</button>
+          <input id="browser-selector" type="text" placeholder="CSS selector" aria-label="CSS selector" />
+          <button class="ctrl-btn" id="browser-click-selector">Click selector</button>
+          <input id="browser-type-text" type="text" placeholder="Văn bản cần nhập" aria-label="Văn bản đồng bộ" />
+          <button class="ctrl-btn" id="browser-type-submit">Gõ đồng bộ</button>
+        </div>
+        <div class="browser-profile-summary" id="browser-profile-summary" aria-live="polite">Đang tải danh sách profiles…</div>
+        <div class="browser-profile-grid" id="browser-profile-grid"></div>
+      </div>
+    </section>
 
     <!-- TAB 3: INTERACTIVE ADR LEARNING PORTAL (PLAN.md Section 3.A.2) -->
     <div class="tab-panel" id="panel-adr">

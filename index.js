@@ -435,6 +435,10 @@ const server = http.createServer(async (req, res) => {
         body.prefix || "profile",
         body.browserType || "auto"
       );
+      websocketHub.broadcastEvent("BROWSER_PROFILE_CREATED", {
+        count: body.count || 1,
+        message: `Created ${body.count || 1} browser profile(s)`,
+      });
       return sendJson(res, 200, result);
     }
 
@@ -445,6 +449,11 @@ const server = http.createServer(async (req, res) => {
         body.profileId || null,
         body.url || "about:blank"
       );
+      websocketHub.broadcastEvent("BROWSER_PROFILE_STATE_CHANGED", {
+        profileId: body.profileId || "ALL",
+        status: "START_REQUESTED",
+        message: `Browser profile start requested${body.profileId ? ` for ${body.profileId}` : " for all profiles"}`,
+      });
       return sendJson(res, 200, result);
     }
 
@@ -452,6 +461,11 @@ const server = http.createServer(async (req, res) => {
     if (req.method === "POST" && pathname === "/api/browser/profiles/stop") {
       const body = await readJsonBody(req);
       const result = await pythonBridge.stopBrowserProfile(body.profileId || null);
+      websocketHub.broadcastEvent("BROWSER_PROFILE_STATE_CHANGED", {
+        profileId: body.profileId || "ALL",
+        status: "STOP_REQUESTED",
+        message: `Browser profile stop requested${body.profileId ? ` for ${body.profileId}` : " for all profiles"}`,
+      });
       return sendJson(res, 200, result);
     }
 
@@ -465,6 +479,11 @@ const server = http.createServer(async (req, res) => {
         body.command,
         body.groupId || "sync_hub_default"
       );
+      websocketHub.broadcastEvent("BROWSER_PROFILE_SYNC", {
+        command: body.command,
+        broadcast: result.broadcast || result,
+        message: `Browser profiles synchronized: ${body.command}`,
+      });
       return sendJson(res, 200, result);
     }
 
